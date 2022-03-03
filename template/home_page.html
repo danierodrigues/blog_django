@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %} Posts {% endblock title %}
+
+{% block content %}
+
+
+<br/><br/><br/><br/>
+{% for post in post %}
+<br/>
+    <div>
+        <p>
+            <h3 class="display-4" style="font-weight: bold;color: black;text-decoration: none;">
+            <a href="{% url 'post-details' post.pk %}" style="color: black;text-decoration: none;">{{ post.post_title }}</a></h3>
+            <p>Posted By
+                {% if post.author.profile %}
+                <a href="{% url 'show_profile_page' post.author.profile.user_id %}">
+                    {{ post.author.first_name }} {{ post.author.last_name }}</a>
+                {% else %}
+                    {{ post.author.first_name }} {{ post.author.last_name }}
+                {% endif %}
+                 at {{ post.date_published|date:"Y-m-d H:i:s" }}
+                {% if user.is_authenticated and user.id == post.author_id %}
+                -
+                    <small><a href="{% url 'post-update' post.pk %}">Edit</a></small>
+                    <small><a href="{% url 'post-delete' post.pk %}">Delete</a></small>
+                {% endif %}
+            </p>
+            <br/>
+            <p >
+                {{ post.post_content | slice:":200"|safe }}
+            </p>
+            {% if post.post_image %}
+                <img src="media/{{ post.post_image }}">
+            {% endif %}
+
+        </p>
+    </div>
+<br/>
+<hr/>
+<br/>
+
+{% endfor %}
+
+
+{% endblock content %}

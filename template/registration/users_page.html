@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Users {% endblock title %}
+
+{% block content %}
+
+
+<h1>users</h1>
+
+<br/><br/>
+
+{% if users %}
+{% for page_user in users %}
+{% if user.id != page_user.user_id %}
+
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-2">
+    {% if page_user.profile_pic %}
+            <img src="{{ page_user.profile_pic.url }}" class="img-fluid rounded-start">
+    {% else %}
+            <img src="{% static 'users/images/default-profile-pic.jpg' %}" class="img-fluid rounded-start">
+    {% endif %}
+            </div>
+            <div class="col-md-10">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'show_profile_page' page_user.user_id %}" >
+                            {{ page_user.user.first_name }}
+                            {{ page_user.user.last_name }}
+                        </a>
+                    </h5>
+                    <p class="card-text">
+                        {{ page_user.profile_description }}
+                    </p>
+                    <p>
+                        <form action="{% url 'friend-user-to-users' %}" method="POST">
+                            {% csrf_token %}
+
+                        {% if user.is_authenticated %}
+                            {% if page_user.isFollower %}
+                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-danger btn-sm">Unfollow</button>
+                            {% else %}
+                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-primary btn-sm">Follow</button>
+                            {% endif %}
+                        {% endif %}
+                        {{ page_user.total_friends }} Followers
+                        </form>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+<br/><br/>
+{% endif %}
+{% endfor %}
+
+
+{% else %}
+    <h4>There are currently no users</h4>
+{% endif %}
+
+{% endblock content %}

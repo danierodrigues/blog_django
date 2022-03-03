@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} User Profile {% endblock title %}
+
+{% block content %}
+
+
+<h1>User Profile</h1>
+
+<br/>
+
+
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-2">
+{% if page_user.profile_pic %}
+                <img src="{{ page_user.profile_pic.url }}" class="img-fluid rounded-start">
+{% else %}
+                <img src="{% static 'users/images/default-profile-pic.jpg' %}" class="img-fluid rounded-start">
+{% endif %}
+            </div>
+            <div class="col-md-10">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {{ page_user.user.first_name }}
+                        {{ page_user.user.last_name }}
+                    </h5>
+                    <p class="card-text">
+                        {{ page_user.profile_description }}
+                    </p>
+                    <p>
+                        <form action="{% url 'friend-user' page_user.user.id %}" method="POST">
+                            {% csrf_token %}
+                        {% if user.is_authenticated and user.id != page_user.user_id %}
+                            {% if isFollower %}
+                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-danger btn-sm">Unfollow</button>
+                            {% else %}
+                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-primary btn-sm">Follow</button>
+                            {% endif %}
+                        {% endif %}
+
+                             {{ total_friends }} Followers
+                        </form>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock content %}

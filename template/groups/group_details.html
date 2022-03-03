@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ group.name }}
+{% endblock %}
+
+{% load static %}
+{% block content %}
+
+<div xmlns="http://www.w3.org/1999/html">
+    <h1>{{ group.name }}</h1>
+    <small>By: {{ group.owner.first_name }} {{ group.owner.last_name }}
+        {% if user.is_authenticated and user.id == group.owner.author_id %}
+            - <a href="{% url 'group-update' group.pk %}">Edit</a></small>
+            <small><a href="{% url 'group-delete' group.pk %}">Delete</a></small>
+        {% endif %}
+    <br/>
+    <p>{{ group.date_created|date:"Y-m-d h:m:s" }}</p>
+    <br/>
+    <br/>
+    {% if group.group_picture %}
+        <img src="{{ group.group_picture.url }}" class="img-fluid rounded-start">
+    {% else %}
+        <img src="{% static 'groups/images/default_group_pic.png' %}" class="img-fluid rounded-start">
+    {% endif %}
+    <br/><br/>
+    {{ group.description|safe }}
+    <br/>
+    <br/>
+    <a href="{% url 'index_groups' %}" class="btn btn-secondary">Back</a>
+
+    <br/><br/>
+    <hr>
+    <br/>
+
+
+    <form action="{% url 'group-user' group.pk %}" method="POST">
+        {% csrf_token %}
+
+    {% if user.is_authenticated %}
+        {% if entered %}
+            <button type="submit", name="group_id", value="{{ group.id }}", class="btn btn-danger btn-sm">Leave</button>
+        {% else %}
+            <button type="submit", name="group_id", value="{{ group.id }}", class="btn btn-primary btn-sm">Enter</button>
+        {% endif %}
+    {% endif %}
+
+         {{ total_users }} Users
+    </form>
+
+
+    <br/><br/>
+
+    {% comment ""  %}
+
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-2">
+{% if post.author.profile.profile_pic %}
+                <img src="{{ post.author.profile.profile_pic.url }}" class="img-fluid rounded-start">
+{% else %}
+                <img src="{% static 'users/images/default-profile-pic.jpg' %}" class="img-fluid rounded-start">
+{% endif %}
+            </div>
+            <div class="col-md-10">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {{ post.author.first_name }}
+                        {{ post.author.last_name }}
+                    </h5>
+                    <p>
+                        <a href="{% url 'show_profile_page' post.author.profile.user_id %}">Profile Page</a>
+                    </p>
+                    <p class="card-text">
+                        {{ post.author.profile.profile_description }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endcomment  %}
+</div>
+
+
+{% endblock content %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Groups {% endblock title %}
+
+{% block content %}
+
+
+<h1>Groups</h1>
+
+<br/><br/>
+
+{% if groups %}
+{% for group in groups %}
+
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-2">
+    {% if group.group_picture %}
+            <img src="{{group.group_picture.url}}" class="img-fluid rounded-start">
+    {% else %}
+            <img src="{% static 'groups/images/default_group_pic.png' %}" class="img-fluid rounded-start">
+    {% endif %}
+            </div>
+            <div class="col-md-10">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'group-details' group.id %}" >{{ group.name }}</a>
+                        {% if user.is_authenticated and user.id == group.owner.id %}
+                        -
+                            <small><a href="{% url 'group-update' group.pk %}">Edit</a></small>
+                            <small><a href="{% url 'group-delete' group.pk %}">Delete</a></small>
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">
+                        {{ group.description|safe }}
+                    </p>
+                    <p class="card-text">
+                        Created at {{ group.date_created|date:"Y-m-d H:i:s" }}
+                    </p>
+                    <p class="card-text">
+                        Owner: <a href="{% url 'show_profile_page' group.owner.id %}" >{{ group.owner.first_name }} {{ group.owner.last_name }}</a>
+                    </p>
+                    <p class="card-text">
+                        <form action="{% url 'group-user-to-users' %}" method="POST">
+                            {% csrf_token %}
+
+                            {% if user.is_authenticated and group.entered %}
+                                <button type="submit", name="group_id", value="{{ group.id }}", class="btn btn-danger btn-sm">Leave</button>
+                            {% else %}
+                                <button type="submit", name="group_id", value="{{ group.id }}", class="btn btn-primary btn-sm">Enter</button>
+                            {% endif %}
+
+                             {{ group.total_users }} Users
+                        </form>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+<br/><br/>
+{% endfor %}
+
+
+{% else %}
+    <h4>There are currently no groups</h4>
+{% endif %}
+
+{% endblock content %}
