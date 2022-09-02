@@ -1,30 +1,30 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Delete Blog Post
+Eliminar Postagem
 {% endblock %}
 
 {% load static %}
 {% block content %}
 
-{% if user.is_authenticated and user.id == post.author_id %}
+{% if user.is_authenticated and user.id == posts.author_id %}
 
-<h1>Delete Post</h1>
+<h1>Eliminar Postagem</h1>
 <br/><br/>
-<h3>Delete: {{ post.post_title }}</h3>
+<h3>Eliminar: {{ posts.post_title }}</h3>
 <br/>
 <div class="form-group">
     <form method="POST">
         {% csrf_token %}
-        <strong>Are you sure?</strong><br/>
+        <strong>Tem a certeza que pretende eliminar?</strong><br/>
         <br/>
-        <button class="btn btn-secondary">Delete Post</button>
+        <button class="btn btn-secondary">Eliminar Postagem</button>
     </form>
 </div>
 
 {% else %}
 <br/>
-Access to this page not allowed!
+{% include 'not_allowed_body.html' %}
 
 {% endif %}
 

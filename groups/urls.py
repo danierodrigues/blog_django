@@ -1,8 +1,6 @@
 from django.urls import path
 from .views import AddGroupView, GroupListView, GroupDeleteView, GroupUpdateView, GroupDetailView, EnterUserView, EnterInGroupAndRedirectToGroupList
 
-from . import views
-
 urlpatterns = [
     path('', GroupListView.as_view(), name='index_groups'),
     path('group/', AddGroupView.as_view(), name='group-create'),

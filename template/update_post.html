@@ -7,22 +7,141 @@ Edit Blog Post
 {% load static %}
 {% block content %}
 
-{% if user.is_authenticated and user.id == post.author_id %}
+{% if user.is_authenticated and user.id == posts.author_id %}
 
-<h1>Update Post</h1>
-<br/><br/>
+<h1>Editar Postagem</h1>
+<br/>
+<button class="btn btn-primary primaryButton">
+    <a href="{% url 'post-image' posts.id %}" style="text-decoration:none;color: inherit;">Gerir Imagens</a>
+</button>
+<br/><br/><br/><br/><br/>
 <div class="form-group">
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.media }}
-        {{ form.as_p }}
-        <button class="btn btn-primary">Update</button>
+
+
+        {% for field in form %}
+            {% if field.label == 'Grupos'  %}
+
+        <div id="classContainer">
+                <span>{{ field.errors }}</span>
+                <table class="table table-hover">
+                    <thead>
+                        <th></th>
+                        <th>Grupo</th>
+                        <th>Administrador</th>
+                        <th>Membros</th>
+                    </thead>
+                    <tbody>
+                        {% if field.field %}
+
+                                {% for obj_choice, obj_value in field.field.choices %}
+
+                                    <tr>
+                                        <td style="font-size:0">
+                                            {% for groupField in field %}
+                                                {% if forloop.counter0 == forloop.parentloop.counter0 %}
+                                                    {{groupField}}
+                                                {% endif %}
+                                            {% endfor %}
+                                          <!--  <input type="checkbox" name="tags" value="{{obj_choice.instance.pk}}"
+                                            id="id_{{obj_choice.instance.pk}}"
+                                            class="tags__checkbox tags__checkbox_style_{{obj_choice.instance.style}}"
+                                            {% if obj_choice.instance.pk in form.groups.value %} checked="checked"{% endif %}> -->
+
+                                        </td>
+                                        <td>{{ obj_choice.instance.name }}</td>
+                                        <td>{{ obj_choice.instance.owner.first_name }} {{ obj_choice.instance.owner.last_name }}</td>
+                                        <td>{{ obj_choice.instance.total_users }}</td>
+                                    </tr>
+
+
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+
+                                <td colspan="4"><h4>Não tem grupos disponiveis</h4></td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+    <br>
+    <br>
+            {% else %}
+                <span>{{ field.errors }}</span>
+                <p>{{ field.label_tag }}{{ field }}</p>
+
+                <br>
+            {% endif %}
+        {% endfor %}
+
+
+        </br>
+
+        {% for field in form_images %}
+            <span>{{ field.errors }}</span>
+            <p>{{ field.label_tag }}{{ field }}</p>
+
+            <br>
+        {% endfor %}
+
+        <button class="btn btn-primary primaryButton">Guardar</button>
     </form>
+
+    <br>
+    <br>
+
+
+    {% comment %}
+    <!-- {% for image in images %}
+        <form action="{% url 'post-image-delete' image.id %}" method="DELETE">
+        <button type="submit" class="btn btn-danger">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+              <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+            </svg>
+            Eliminar Imagem definitivamente
+        </button>
+        </form>
+         <a href="{% url 'post-image-delete' image.id %}" target="_blank">TESTE</a>
+        <img src="../../../media/{{ image.image }}">
+    {% endfor %} -->
+    {% endcomment %}
 </div>
 
+
+<script>
+    var element = document.getElementById("id_isPublic").checked
+
+    if(element == true){
+        document.getElementById("id_isForFollowers").parentElement.style.display = "none";
+        document.getElementById("classContainer").style.display = "none";
+    }else{
+        document.getElementById("id_isForFollowers").parentElement.style.display = "block";
+        document.getElementById("classContainer").style.display = "block";
+    }
+    document.getElementById("id_isPublic").onclick = function() {
+        var element = document.getElementById("id_isPublic").checked
+        if(element == true){
+            document.getElementById("id_isForFollowers").parentElement.style.display = "none";
+            document.getElementById("classContainer").style.display = "none";
+        }else{
+            document.getElementById("id_isForFollowers").parentElement.style.display = "block";
+            document.getElementById("classContainer").style.display = "block";
+
+        }
+
+    }
+
+</script>
+
 {% else %}
+
+
 <br/>
-Access to this page not allowed!
+<br/>
+{% include 'not_allowed_body.html' %}
 
 {% endif %}
 

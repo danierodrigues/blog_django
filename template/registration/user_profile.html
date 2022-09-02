@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} User Profile {% endblock title %}
+{% block title %} Perfil de Utilizador {% endblock title %}
 
 {% block content %}
 
 
-<h1>User Profile</h1>
+<h1>Perfil</h1>
 
 <br/>
 
@@ -33,13 +33,13 @@
                             {% csrf_token %}
                         {% if user.is_authenticated and user.id != page_user.user_id %}
                             {% if isFollower %}
-                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-danger btn-sm">Unfollow</button>
+                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-danger btn-sm">Parar de Seguir</button>
                             {% else %}
-                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-primary btn-sm">Follow</button>
+                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-primary primaryButton btn-sm">Seguir</button>
                             {% endif %}
                         {% endif %}
 
-                             {{ total_friends }} Followers
+                             {{ total_friends }} Seguidores
                         </form>
                     </p>
                 </div>

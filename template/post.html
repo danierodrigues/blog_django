@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Create Post
+Criar Postagem
 {% endblock %}
 
 {% load static %}
@@ -9,21 +9,86 @@ Create Post
 
 {% if user.is_authenticated %}
 
-<h1>Add Post</h1>
+
+<h1>Criar Postagem</h1>
 <br/><br/>
 <div class="form-group">
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.media }}
-        {{ form.as_p }}
-        <button class="btn btn-primary">Post</button>
+
+            {% for field in form %}
+            {% if field.label == 'Grupos'  %}
+            <div id="classContainer">
+                <span>{{ field.errors }}</span>
+                <table class="table table-hover">
+                    <thead>
+                        <th></th>
+                        <th>Grupo</th>
+                        <th>Administrador</th>
+                        <th>Membros</th>
+                    </thead>
+                    <tbody>
+                        {% for group in groups.all %}
+                            {% for groupField in field %}
+                                {% if forloop.counter0 == forloop.parentloop.counter0 %}
+                                <tr>
+                                    <td style="font-size:0">{{ groupField }}</td>
+                                    <td>{{ group.name }}</td>
+                                    <td>{{ group.owner.first_name }} {{ group.owner.last_name }}</td>
+                                    <td>{{ group.total_users }}</td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+                <span>{{ field.errors }}</span>
+                <p>{{ field.label_tag }}{{ field }}</p>
+
+                <br>
+            {% endif %}
+        {% endfor %}
+
+
+        </br>
+        <button class="btn btn-primary primaryButton">Criar Postagem</button>
     </form>
 </div>
 
 
+<script>
+    var element = document.getElementById("id_isPublic").checked
+
+    if(element == true){
+        document.getElementById("id_isForFollowers").parentElement.style.display = "none";
+        document.getElementById("classContainer").style.display = "none";
+    }else{
+        document.getElementById("id_isForFollowers").parentElement.style.display = "block";
+        document.getElementById("classContainer").style.display = "block";
+    }
+    document.getElementById("id_isPublic").onclick = function() {
+        var element = document.getElementById("id_isPublic").checked
+        if(element == true){
+            document.getElementById("id_isForFollowers").parentElement.style.display = "none";
+            document.getElementById("classContainer").style.display = "none";
+        }else{
+            document.getElementById("id_isForFollowers").parentElement.style.display = "block";
+            document.getElementById("classContainer").style.display = "block";
+
+        }
+
+    }
+
+</script>
+
 {% else %}
 <br/>
-Access to this page not allowed!
+{% include 'not_allowed_body.html' %}
 
 {% endif %}
 

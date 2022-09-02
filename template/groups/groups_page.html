@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} Groups {% endblock title %}
+{% block title %} Grupos {% endblock title %}
 
 {% block content %}
 
 
-<h1>Groups</h1>
+<h1>Grupos</h1>
 
 <br/><br/>
 
@@ -27,8 +27,8 @@
                         <a href="{% url 'group-details' group.id %}" >{{ group.name }}</a>
                         {% if user.is_authenticated and user.id == group.owner.id %}
                         -
-                            <small><a href="{% url 'group-update' group.pk %}">Edit</a></small>
-                            <small><a href="{% url 'group-delete' group.pk %}">Delete</a></small>
+                            <small><a href="{% url 'group-update' group.pk %}">Editar</a></small>
+                            <small><a href="{% url 'group-delete' group.pk %}">Eliminar</a></small>
                         {% endif %}
                     </h5>
                     <p class="card-text">
@@ -44,13 +44,11 @@
                         <form action="{% url 'group-user-to-users' %}" method="POST">
                             {% csrf_token %}
 
-                            {% if user.is_authenticated and group.entered %}
-                                <button type="submit", name="group_id", value="{{ group.id }}", class="btn btn-danger btn-sm">Leave</button>
-                            {% else %}
-                                <button type="submit", name="group_id", value="{{ group.id }}", class="btn btn-primary btn-sm">Enter</button>
+                            {% if user.is_authenticated and group.entered and user.id != group.owner.id %}
+                                <button type="submit", name="group_id", value="{{ group.id }}", class="btn btn-danger btn-sm">Sair</button>
                             {% endif %}
 
-                             {{ group.total_users }} Users
+                             {{ group.total_users }} Utilizadores
                         </form>
                     </p>
                 </div>
@@ -62,7 +60,7 @@
 
 
 {% else %}
-    <h4>There are currently no groups</h4>
+    <h4>Não existem grupos atualmente</h4>
 {% endif %}
 
 {% endblock content %}

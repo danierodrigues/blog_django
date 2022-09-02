@@ -12,6 +12,9 @@ class Profile(models.Model):
     def total_friends(self):
         return self.friends.count()
 
+    def isFollowerFunction(self,userId):
+        return self.friends.filter(id=userId).exists()
+
     def __str__(self):
         return str(self.user)
 

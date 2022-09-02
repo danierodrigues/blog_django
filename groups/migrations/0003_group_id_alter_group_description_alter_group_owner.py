@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='group',
             name='id',
-            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID', blank=False),
             preserve_default=False,
         ),
         migrations.AlterField(

@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Edit Profile
+Editar Perfil
 {% endblock %}
 
 {% load static %}
 
+
 {% block content %}
 
-<h1>Edit Settings</h1>
+<h1>Editar Definições</h1>
 <br/><br/>
 
 
@@ -18,8 +19,13 @@ Edit Profile
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button class="btn btn-primary">Update Profile</button>
+        <button class="btn btn-primary primaryButton">Guardar</button>
     </form>
 </div>
+
+<script>
+    passwordSet = document.getElementById("id_password");
+    passwordSet.style.visibility = "hidden";
+</script>
 
 {% endblock content %}

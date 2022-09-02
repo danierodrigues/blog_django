@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} Users {% endblock title %}
+{% block title %} Utilizadores {% endblock title %}
 
 {% block content %}
 
 
-<h1>users</h1>
+<h1>Utilizadores</h1>
 
 <br/><br/>
 
-{% if users %}
+
+{% if users.count > 0 %}
+
 {% for page_user in users %}
-{% if user.id != page_user.user_id %}
 
     <div class="card mb-3">
         <div class="row g-0">
@@ -39,12 +40,12 @@
 
                         {% if user.is_authenticated %}
                             {% if page_user.isFollower %}
-                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-danger btn-sm">Unfollow</button>
+                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-danger btn-sm">Deixar de seguir</button>
                             {% else %}
-                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-primary btn-sm">Follow</button>
+                                <button type="submit", name="friend_id", value="{{ page_user.user_id }}", class="btn btn-primary primaryButton btn-sm">Seguir</button>
                             {% endif %}
                         {% endif %}
-                        {{ page_user.total_friends }} Followers
+                        {{ page_user.total_friends }} Seguidores
                         </form>
                     </p>
                 </div>
@@ -52,12 +53,10 @@
         </div>
     </div>
 <br/><br/>
-{% endif %}
 {% endfor %}
 
-
 {% else %}
-    <h4>There are currently no users</h4>
+    <h4>Atualmente não existem perfis de utilizadores</h4>
 {% endif %}
 
 {% endblock content %}

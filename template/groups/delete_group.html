@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Delete Group
+Eliminar Grupo
 {% endblock %}
 
 {% load static %}
@@ -9,22 +9,22 @@ Delete Group
 
 {% if user.is_authenticated and user.id == group.owner.id %}
 
-<h1>Delete Group</h1>
+<h1>Eliminar Grupo</h1>
 <br/><br/>
-<h3>Delete: {{ group.name }}</h3>
+<h3>Eliminar: {{ group.name }}</h3>
 <br/>
 <div class="form-group">
     <form method="POST">
         {% csrf_token %}
-        <strong>Are you sure?</strong><br/>
+        <strong>Tem a certeza que pretende eliminar?</strong><br/>
         <br/>
-        <button class="btn btn-secondary">Delete Group</button>
+        <button class="btn btn-secondary">Eliminar Grupo</button>
     </form>
 </div>
 
 {% else %}
 <br/>
-Access to this page not allowed!
+{% include '../not_allowed_body.html' %}
 
 {% endif %}
 

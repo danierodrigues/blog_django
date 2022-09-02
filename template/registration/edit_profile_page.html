@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Edit Profile
+Editar Perfil
 {% endblock %}
 
 {% load static %}
@@ -9,19 +9,19 @@ Edit Profile
 
 {% if user.is_authenticated and user.id == profile.user_id %}
 
-<h1>Edit Profile</h1>
+<h1>Editar Perfil</h1>
 <br/><br/>
 <div class="form-group">
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button class="btn btn-primary">Update Profile</button>
+        <button class="btn btn-primary primaryButton">Editar Perfil</button>
     </form>
 </div>
 
 {% else %}
 <br/>
-Access to this page not allowed!
+{% include '../not_allowed_body.html' %}
 
 {% endif %}
 

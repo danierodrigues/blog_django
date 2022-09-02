@@ -1,5 +1,9 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
+
+from assets.queries.raw_queries import getAllUsersExceptSelf, getAllUsersExceptSelfAndOwner, userBelongsToThisGroup, \
+    removeUserFromGroup, addUserToGroup
 from .models import Group
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView, ListView
 from .forms import GroupForm
@@ -19,10 +23,11 @@ class GroupListView(ListView):
         context = super(GroupListView, self).get_context_data()
         groups = context['groups']
         for group in groups:
+            print(group)
             fields = get_object_or_404(Group, id=group.id)
             total_users = group.total_users()
             entered = False
-            if fields.users.filter(id=self.request.user.id).exists():
+            if userBelongsToThisGroup(fields, self.request.user.id):
                 entered = True
 
             group.total_users = total_users
@@ -35,15 +40,24 @@ class AddGroupView(CreateView):
     form_class = GroupForm
     template_name = 'groups/create_group.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(AddGroupView, self).get_context_data()
+
+        users = getAllUsersExceptSelf(self.request.user.id)
+
+        form = context['form']
+        form.fields['users'].queryset = users.all()
+        context['users'] = users
+        return context
+
     def post(self, request, *args, **kwargs):
-        print("inicio")
         form = self.form_class(request.POST, request.FILES)
         form.instance.owner = self.request.user
 
         if form.is_valid():
             form.save()
 
-            return redirect(reverse('group-details', kwargs={'pk': str(form.instance.id) }))
+            return HttpResponseRedirect(reverse('index_groups'))
 
 
 class GroupDetailView(DetailView):
@@ -56,7 +70,7 @@ class GroupDetailView(DetailView):
         total_users = fields.total_users()
 
         entered = False
-        if fields.users.filter(id=self.request.user.id).exists():
+        if userBelongsToThisGroup(fields, self.request.user.id):
             entered = True
 
         context["total_users"] = total_users
@@ -68,6 +82,17 @@ class GroupUpdateView(UpdateView):
     form_class = GroupForm
     template_name = 'groups/update_group.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(GroupUpdateView, self).get_context_data()
+        fields = get_object_or_404(Group, id=self.kwargs['pk'])
+
+        users = getAllUsersExceptSelfAndOwner(self.request.user.id, fields.owner_id)
+
+        form = context['form']
+        form.fields['users'].queryset = users.all()
+        context['users'] = users
+        return context
+
 class GroupDeleteView(DeleteView):
     model = Group
     template_name = 'groups/delete_group.html'
@@ -75,24 +100,21 @@ class GroupDeleteView(DeleteView):
 
 def EnterUserView(request, pk):
     group = get_object_or_404(Group, id=request.POST.get('group_id'))
-    entered = False
-    if group.users.filter(id=request.user.id).exists():
-        group.users.remove(request.user)
-        entered = False
+
+    if userBelongsToThisGroup(group, request.user.id):
+        removeUserFromGroup(group, request.user)
+
     else:
-        group.users.add(request.user)
-        entered = True
+        addUserToGroup(group, request.user)
+
 
     return HttpResponseRedirect(reverse('group-details', args=[str(pk)]))
 
 def EnterInGroupAndRedirectToGroupList(request):
     group = get_object_or_404(Group, id=request.POST.get('group_id'))
-    entered = False
-    if group.users.filter(id=request.user.id).exists():
-        group.users.remove(request.user)
-        entered = False
+    if userBelongsToThisGroup(group, request.user.id):
+        removeUserFromGroup(group, request.user)
     else:
-        group.users.add(request.user)
-        entered = True
+        addUserToGroup(group, request.user)
 
     return HttpResponseRedirect(reverse('index_groups'))

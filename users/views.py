@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, CreateView, UpdateView, ListView
 
+from assets.queries.raw_queries import getProfilesListWithotThisUser, addFriend, removeFriend, isThisUserAFriend
 from .forms import SignUpForm, EditProfileForm, PasswordChangingForm, ProfilePageForm
 from .models import Profile
 
@@ -18,17 +19,10 @@ class UserListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(UserListView, self).get_context_data()
-        users = context['object_list']
-        for user in users:
-            fields = get_object_or_404(Profile, user_id=user.user_id)
-            total_friends = user.total_friends()
-            isFollower = False
-            if fields.friends.filter(id=self.request.user.id).exists():
-                isFollower = True
-
-            user.total_friends = total_friends
-            user.isFollower = isFollower
-
+        profiles = getProfilesListWithotThisUser(self.request.user.id)
+        for profile in profiles:
+            profile.isFollower = profile.isFollowerFunction(self.request.user.id)
+        context['users'] = profiles
         return context
 
 
@@ -64,7 +58,7 @@ class ShowProfilePageView(DetailView):
         total_friends = page_user.total_friends()
 
         isFollower = False
-        if page_user.friends.filter(id=self.request.user.id).exists():
+        if isThisUserAFriend(page_user, self.request.user.id):
             isFollower = True
 
         context['page_user'] = page_user
@@ -89,24 +83,18 @@ class CreateProfilePageView(CreateView):
 
 def FriendView(request, pk):
     user = get_object_or_404(Profile, user_id=request.POST.get('friend_id'))
-    isFollower = False
-    if user.friends.filter(id=request.user.id).exists():
-        user.friends.remove(request.user)
-        isFollower = False
+    if isThisUserAFriend(user, request.user.id):
+        removeFriend(user, request.user)
     else:
-        user.friends.add(request.user)
-        isFollower = True
+        addFriend(user, request.user)
 
     return HttpResponseRedirect(reverse('show_profile_page', args=[str(pk)]))
 
 def FriendAndRedirectToUserList(request):
     user = get_object_or_404(Profile, user_id=request.POST.get('friend_id'))
-    isFollower = False
-    if user.friends.filter(id=request.user.id).exists():
-        user.friends.remove(request.user)
-        isFollower = False
+    if isThisUserAFriend(user, request.user.id):
+        removeFriend(user, request.user)
     else:
-        user.friends.add(request.user)
-        isFollower = True
+        addFriend(user, request.user)
 
     return HttpResponseRedirect(reverse('index_user'))

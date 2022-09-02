@@ -1,37 +1,47 @@
 {% extends 'base.html' %}
 
-{% block title %} Posts {% endblock title %}
+{% block title %} Postagens {% endblock title %}
 
 {% block content %}
 
 
 <br/><br/><br/><br/>
-{% for post in post %}
+{% for post in posts %}
 <br/>
+    <script>console.log('{{post.post_image}}')</script>
     <div>
-        <p>
-            <h3 class="display-4" style="font-weight: bold;color: black;text-decoration: none;">
-            <a href="{% url 'post-details' post.pk %}" style="color: black;text-decoration: none;">{{ post.post_title }}</a></h3>
-            <p>Posted By
+
+            <div class="imageTitleContainer">
+            <h1 class="display-4" class="titlePost">
+            <a href="{% url 'post-details' post.pk %}" class="test" style="text-decoration: none;">{{ post.post_title }}</a></h1>
+            </div>
+                <p>Publicado por
                 {% if post.author.profile %}
                 <a href="{% url 'show_profile_page' post.author.profile.user_id %}">
                     {{ post.author.first_name }} {{ post.author.last_name }}</a>
                 {% else %}
                     {{ post.author.first_name }} {{ post.author.last_name }}
                 {% endif %}
-                 at {{ post.date_published|date:"Y-m-d H:i:s" }}
+                 às {{ post.date_published|date:"Y-m-d H:i:s" }}
                 {% if user.is_authenticated and user.id == post.author_id %}
                 -
-                    <small><a href="{% url 'post-update' post.pk %}">Edit</a></small>
-                    <small><a href="{% url 'post-delete' post.pk %}">Delete</a></small>
+                    <small><a href="{% url 'post-update' post.pk %}">Editar</a></small>
+                    <small><a href="{% url 'post-delete' post.pk %}">Eliminar</a></small>
                 {% endif %}
             </p>
             <br/>
             <p >
                 {{ post.post_content | slice:":200"|safe }}
             </p>
-            {% if post.post_image %}
-                <img src="media/{{ post.post_image }}">
+            <br/><br/>
+            {% if post.hasImages %}
+                {% for image in post.getImages %}
+                    <div class="imageContainer">
+                        <a href="{% url 'post-details' post.pk %}" class="test" style="text-decoration: none;">
+                            <img alt="Imagem da Postagem" src="media/{{ image.image }}">
+                        </a>
+                    </div>
+                {% endfor %}
             {% endif %}
 
         </p>
@@ -39,7 +49,24 @@
 <br/>
 <hr/>
 <br/>
-
+<style>
+    img{
+        width:80%;
+    }
+    .imageContainer{
+        width: 100%;
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    .linkImage{
+        :hover{
+        opacity: 0.9;
+        }
+    }
+    .imageTitleContainer{
+        text-align: center;
+    }
+</style>
 {% endfor %}
 
 

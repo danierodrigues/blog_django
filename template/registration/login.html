@@ -14,17 +14,17 @@ Login
         {% csrf_token %}
 
         <div class="mb-3">
-            <input type="text" class="form-control" name="username" placeholder="Username">
+            <input type="text" class="form-control" name="username" placeholder="Nome de Utilizador">
         </div>
         <div class="mb-3">
             <input type="password" class="form-control" name="password" placeholder="Password">
         </div>
 
         <br/>
-        <button class="btn btn-primary">Login</button>
+        <button class="btn btn-primary primaryButton">Login</button>
     </form>
 </div>
 <br/>
-Not Registerd? Sign Up <a href="{% url 'register' %}">Here</a>
+Não está registado? Registe-se <a href="{% url 'register' %}">Aqui</a>
 
 {% endblock content %}

@@ -1,13 +1,9 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Not Allowed
+Permissão Negada
 {% endblock %}
 
-{% load static %}
 {% block content %}
-
-<h1>You do not have permissions to access this page</h1>
-
-
+{% include 'not_allowed_body.html' %}
 {% endblock content %}

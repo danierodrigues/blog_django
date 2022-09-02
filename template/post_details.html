@@ -1,53 +1,55 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{{ post.post_title }}
+{{ posts.post_title }}
 {% endblock %}
 
 {% load static %}
 {% block content %}
 <br/>
 <div xmlns="http://www.w3.org/1999/html">
-    <h1>{{ post.post_title }}</h1>
-    <small>By: {{ post.author.first_name }} {{ post.author.last_name }}
-        {% if user.is_authenticated and user.id == post.author_id %}
-            - <a href="{% url 'post-update' post.pk %}">Edit</a></small>
-            <small><a href="{% url 'post-delete' post.pk %}">Delete</a></small>
+    <h1 class="imagePostContainer">{{ posts.post_title }}</h1>
+    <small>Postado por: {{ posts.author.first_name }} {{ posts.author.last_name }}
+        {% if user.is_authenticated and user.id == posts.author_id %}
+            - <a href="{% url 'post-update' posts.pk %}">Editar</a></small>
+            <small><a href="{% url 'post-delete' posts.pk %}">Eliminar</a></small>
         {% endif %}
     <br/>
-    <p>{{ post.date_published|date:"Y-m-d h:m:s" }}</p>
+    <p>{{ posts.date_published|date:"Y-m-d h:m:s" }}</p>
     <br/>
-    {{ post.post_content|safe }}
+    {{ posts.post_content|safe }}
     <br/>
     <br/><br/>
     {% if images %}
         {% for image in images %}
-            <img src="{{ image.image.url }}" width="500">
+            <div class="imageContainer">
+                <img src="{{ image.image.url }}" width="500">
+            </div>
         {% endfor %}
     {% endif %}
 
     <br/><br/>
     <hr>
     <br/>
-    <form action="{% url 'post-like' post.pk %}" method="POST">
+    <form action="{% url 'post-like' posts.pk %}" method="POST">
         {% csrf_token %}
 
     {% if user.is_authenticated %}
         {% if liked %}
-            <button type="submit", name="post_id", value="{{ post.id }}", class="btn btn-danger btn-sm">Unlike</button>
+            <button type="submit", name="post_id", value="{{ posts.id }}", class="btn btn-danger btn-sm">Não gosto</button>
         {% else %}
-            <button type="submit", name="post_id", value="{{ post.id }}", class="btn btn-primary btn-sm">Like</button>
+            <button type="submit", name="post_id", value="{{ posts.id }}", class="btn btn-primary primaryButton btn-sm">Gosto</button>
         {% endif %}
     {% endif %}
 
-        - {{ total_likes }} Likes
+        - {{ total_likes }} Gostos
 
     </form>
 
 
     <br/>
     <br/>
-    <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Voltar</a>
 
 
     <br/><br/>
@@ -55,7 +57,7 @@
     <div class="card mb-3">
         <div class="row g-0">
             <div class="col-md-2">
-{% if post.author.profile.profile_pic %}
+{% if posts.author.profile.profile_pic %}
                 <img src="{{ post.author.profile.profile_pic.url }}" class="img-fluid rounded-start">
 {% else %}
                 <img src="{% static 'users/images/default-profile-pic.jpg' %}" class="img-fluid rounded-start">
@@ -64,18 +66,18 @@
             <div class="col-md-10">
                 <div class="card-body">
                     <h5 class="card-title">
-                        {{ post.author.first_name }}
-                        {{ post.author.last_name }}
+                        {{ posts.author.first_name }}
+                        {{ posts.author.last_name }}
                     </h5>
-                    {% if post.author.profile %}
+                    {% if posts.author.profile %}
                     <p>
-                        <a href="{% url 'show_profile_page' post.author.profile.user_id %}">Profile Page</a>
+                        <a href="{% url 'show_profile_page' posts.author.profile.user_id %}">Página de Perfil</a>
                     </p>
                     <p class="card-text">
-                        {{ post.author.profile.profile_description }}
+                        {{ posts.author.profile.profile_description }}
                     </p>
                     {% else %}
-                    <p>This user don't have profile.</p>
+                    <p>Este utilizador não tem perfil</p>
                     {% endif %}
                 </div>
             </div>
@@ -84,5 +86,24 @@
 
 
 </div>
+
+<style>
+    img{
+        width:80%;
+    }
+    .imageContainer{
+        width: 100%;
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    .linkImage{
+        :hover{
+        opacity: 0.9;
+        }
+    }
+    .imagePostContainer{
+        text-align: center;
+    }
+</style>
 
 {% endblock content %}
